@@ -1,0 +1,28 @@
+WebGoat - A02: Cryptographic Failures
+CWE-327 / CWE-311
+
+Esta categoria foi evidenciada por INSPECAO MANUAL via DevTools, sem necessidade
+de script de exploracao (a falha esta na configuracao/transporte, nao numa
+requisicao especifica manipulavel).
+
+Passo a passo para reproduzir a evidencia:
+
+1. Aplicacao roda inteiramente em HTTP, sem TLS:
+   - Abrir http://127.0.0.1:8080/WebGoat/ e observar que a URL nunca muda
+     para https:// em nenhum momento da navegacao.
+
+2. Ausencia do cabecalho HSTS (Strict-Transport-Security):
+   - DevTools (F12) > aba Network > clicar em qualquer requisicao
+     (ex.: lessonmenu.mvc) > aba Headers > secao "Response Headers".
+   - Confirmar que o cabecalho "Strict-Transport-Security" NAO esta presente.
+
+3. Cookie de sessao sem a flag "Secure":
+   - DevTools (F12) > aba Application > menu lateral "Cookies" >
+     selecionar http://127.0.0.1:8080
+   - Observar a coluna "Secure" do cookie JSESSIONID (ou equivalente):
+     desmarcada = cookie pode trafegar mesmo sem HTTPS.
+
+Impacto (CID): viola diretamente a Confidencialidade - dados (incluindo
+credenciais e cookies de sessao) trafegam sem criptografia em transito,
+sendo interceptaveis em uma rede compartilhada (ex.: ataque MITM).
+Relacao com LGPD: dados pessoais trafegando sem protecao adequada.
